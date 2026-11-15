@@ -98,18 +98,18 @@
  <div class="account-card">
   <div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div><span class="kicker">Glamour Bridge</span><h2 id="accountTitle">My Profile</h2></div><button class="close" onclick="closeAccount()" aria-label="Close">×</button></div>
   <div id="accountAuth">
-   <p style="font-size:12px;color:var(--muted)">Create an account or sign in to view your orders and delivery updates.</p>
-   <label for="accountName">Full name (for new account)</label><input id="accountName" autocomplete="name" placeholder="Your full name">
-   <label for="accountEmail">Email address</label><input id="accountEmail" type="email" autocomplete="email" placeholder="you@example.com">
-   <label for="accountPassword">Password</label><input id="accountPassword" type="password" autocomplete="current-password" minlength="8" placeholder="At least 8 characters">
-   <div class="account-actions"><button class="btn" onclick="customerSignIn()">Sign in</button><button class="btn btn-light" onclick="customerSignUp()">Create account</button></div>
+   <p style="font-size:12px;color:var(--muted)">Login with your phone number using a one-time SMS code. No password or email needed.</p>
+   <label for="accountName">Your name (for new account)</label><input id="accountName" autocomplete="name" placeholder="Your full name">
+   <label for="accountPhone">Phone number</label><input id="accountPhone" type="tel" autocomplete="tel" placeholder="01XXXXXXXXX">
+   <div class="account-actions"><button class="btn" id="sendPhoneCode" onclick="sendPhoneCode()">Send OTP code</button></div>
+   <div id="otpEntry" class="hidden"><label for="accountOtp">SMS verification code</label><input id="accountOtp" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="Enter the code"><div class="account-actions"><button class="btn" onclick="verifyPhoneCode()">Verify & sign in</button><button class="btn btn-light" onclick="sendPhoneCode()">Resend code</button></div></div>
    <p id="accountMessage" role="status" style="font-size:11px;color:var(--muted)"></p>
+   <p style="font-size:10px;color:var(--muted)">Want to order without an account? Close this window and choose Guest Checkout.</p>
   </div>
   <div id="accountProfile" class="hidden">
    <p id="accountWelcome" style="font-size:12px;color:var(--muted)"></p>
    <div class="account-actions"><button class="btn btn-light" onclick="loadCustomerOrders()">Refresh orders</button><button class="btn btn-light" onclick="customerSignOut()">Sign out</button></div>
-   <h3 style="font:500 22px var(--serif);margin:20px 0 5px">My Orders</h3>
-   <div id="customerOrders"><p class="muted">Loading your orders…</p></div>
+   <h3 style="font:500 22px var(--serif);margin:20px 0 5px">My Orders</h3><div id="customerOrders"><p class="muted">Loading your orders…</p></div>
   </div>
  </div>
 </div><div class="toast" id="toast" role="status"></div>
@@ -121,33 +121,44 @@ const gbClient=window.supabase.createClient(GB_SUPABASE_URL,GB_SUPABASE_KEY);
 let gbCurrentUser=null;
 let gbPendingCheckout=false;
 function gbEsc(v){return String(v??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));}
-function openAccount(){
- closePanels();closeCheckout();
- $("accountModal").classList.add("show");$("overlay").classList.add("show");document.body.classList.add("lock");
- syncAccount();
+function normalizeBdPhone(value){
+ let digits=String(value||"").replace(/[^0-9]/g,"");
+ if(digits.startsWith("880"))digits=digits.slice(2);
+ if(digits.length===11&&digits.startsWith("01"))digits="880"+digits;
+ else if(digits.length===10&&digits.startsWith("1"))digits="880"+digits;
+ return /^8801[3-9][0-9]{8}$/.test(digits)?"+"+digits:null;
 }
+function openAccount(){closePanels();closeCheckout();$("accountModal").classList.add("show");$("overlay").classList.add("show");document.body.classList.add("lock");syncAccount();}
 function closeAccount(){$("accountModal").classList.remove("show");$("overlay").classList.remove("show");document.body.classList.remove("lock")}
 async function syncAccount(){
  const {data:{user}}=await gbClient.auth.getUser();gbCurrentUser=user||null;
  $("accountAuth").classList.toggle("hidden",!!gbCurrentUser);$("accountProfile").classList.toggle("hidden",!gbCurrentUser);
  if(gbCurrentUser){
   $("accountTitle").textContent="My Profile";
-  $("accountWelcome").textContent=(gbCurrentUser.user_metadata?.full_name||gbCurrentUser.email)+" · "+gbCurrentUser.email;
+  $("accountWelcome").textContent=(gbCurrentUser.user_metadata?.full_name||"Customer")+" · "+(gbCurrentUser.phone||"Verified phone");
+  await gbClient.rpc("claim_guest_orders");
   await loadCustomerOrders();
  }else{$("accountTitle").textContent="Welcome";$("accountMessage").textContent="";}
 }
-async function customerSignUp(){
- const name=$("accountName").value.trim(),email=$("accountEmail").value.trim(),password=$("accountPassword").value;
- if(!name||!email||password.length<8){$("accountMessage").textContent="Enter your name, a valid email and a password of at least 8 characters.";return}
- const {data,error}=await gbClient.auth.signUp({email,password,options:{data:{full_name:name},emailRedirectTo:location.origin+location.pathname}});
- $("accountMessage").textContent=error?error.message:(data.session?"Account created. You are signed in.":"Account created. Please verify your email from your inbox, then sign in.");
- if(data.session){await syncAccount();if(gbPendingCheckout){gbPendingCheckout=false;closeAccount();startCheckout();}}
+async function sendPhoneCode(){
+ const phone=normalizeBdPhone($("accountPhone").value),name=$("accountName").value.trim();
+ if(!phone){$("accountMessage").textContent="Enter a valid Bangladesh mobile number, e.g. 017XXXXXXXX.";return}
+ $("sendPhoneCode").disabled=true;$("accountMessage").textContent="Sending SMS verification code…";
+ try{
+  const options={shouldCreateUser:true,data:{full_name:name||"Glamour Bridge Customer"}};
+  const {error}=await gbClient.auth.signInWithOtp({phone,options});
+  if(error)throw error;
+  $("accountOtp").value="";$("otpEntry").classList.remove("hidden");$("accountMessage").textContent="A verification code has been sent to "+phone+". Enter it below.";
+ }catch(err){$("accountMessage").textContent="Could not send SMS code: "+err.message+". Phone login requires an SMS provider configured in Supabase."}
+ finally{$("sendPhoneCode").disabled=false}
 }
-async function customerSignIn(){
- const email=$("accountEmail").value.trim(),password=$("accountPassword").value;
- if(!email||!password){$("accountMessage").textContent="Enter your email and password.";return}
- const {error}=await gbClient.auth.signInWithPassword({email,password});
+async function verifyPhoneCode(){
+ const phone=normalizeBdPhone($("accountPhone").value),token=$("accountOtp").value.trim();
+ if(!phone||!token){$("accountMessage").textContent="Enter your phone number and SMS code.";return}
+ $("accountMessage").textContent="Verifying code…";
+ const {data,error}=await gbClient.auth.verifyOtp({phone,token,type:"sms"});
  if(error){$("accountMessage").textContent=error.message;return}
+ gbCurrentUser=data.user||data.session?.user||null;
  await syncAccount();
  if(gbPendingCheckout){gbPendingCheckout=false;closeAccount();startCheckout();}
 }
@@ -157,16 +168,13 @@ async function loadCustomerOrders(){
  $("customerOrders").innerHTML='<p class="muted">Loading your orders…</p>';
  const {data,error}=await gbClient.from("orders").select("id,customer_name,status,subtotal,delivery_fee,delivery_zone,payment_method,created_at,updated_at,order_items(product_name,quantity,unit_price)").eq("customer_id",gbCurrentUser.id).order("created_at",{ascending:false});
  if(error){$("customerOrders").innerHTML='<p class="muted">Could not load orders right now. Please refresh.</p>';console.error(error);return}
- if(!data?.length){$("customerOrders").innerHTML='<p class="muted">You have not placed any orders yet. Your orders will appear here.</p>';return}
+ if(!data?.length){$("customerOrders").innerHTML='<p class="muted">You have not placed any orders yet. Guest orders made with this verified phone may appear here.</p>';return}
  $("customerOrders").innerHTML=data.map(o=>{
-  const status=(o.status||"pending").replace(/_/g," ");
-  const total=Number(o.subtotal||0)+Number(o.delivery_fee||0);
-  const items=(o.order_items||[]).map(it=>gbEsc(it.product_name)+" × "+it.quantity).join(", ");
-  return '<article class="account-order"><div class="account-order-head"><b>Order #'+gbEsc(o.id.slice(0,8))+'</b><span class="account-status">'+gbEsc(status)+'</span></div><small>'+new Date(o.created_at).toLocaleString("en-BD")+'</small><p style="font-size:11px;margin:8px 0">'+items+'</p><div class="account-order-head"><span>'+money(total)+' · Cash on Delivery</span><small>Updated: '+new Date(o.updated_at||o.created_at).toLocaleString("en-BD")+'</small></div></article>';
+  const status=(o.status||"pending").replace(/_/g," "),total=Number(o.subtotal||0)+Number(o.delivery_fee||0),items=(o.order_items||[]).map(it=>gbEsc(it.product_name)+" × "+it.quantity).join(", ");
+  return '<article class="account-order"><div class="account-order-head"><b>Order #'+gbEsc(o.id.slice(0,8))+'</b><span class="account-status">'+gbEsc(status)+'</span></div><small>'+new Date(o.created_at).toLocaleString("en-BD")+'</small><p style="font-size:11px;margin:8px 0">'+items+'</p><div class="account-order-head"><span>'+money(total)+' · '+gbEsc((o.payment_method||"cod").toUpperCase())+'</span><small>Updated: '+new Date(o.updated_at||o.created_at).toLocaleString("en-BD")+'</small></div></article>';
  }).join("");
 }
 gbClient.auth.onAuthStateChange((event,session)=>{gbCurrentUser=session?.user||null;if(event==="SIGNED_IN"||event==="SIGNED_OUT"||event==="TOKEN_REFRESHED"){if($("accountModal").classList.contains("show"))syncAccount();}});
-
 (function trackVisit(){
  let sid=sessionStorage.getItem("gb_visit_session");
  if(!sid){sid=(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(36).slice(2));sessionStorage.setItem("gb_visit_session",sid)}
@@ -212,7 +220,7 @@ function showOverlay(){$("overlay").classList.add("show");document.body.classLis
 function openCart(){closePanels();$("cartDrawer").classList.add("open");showOverlay()}
 function closePanels(){$("cartDrawer").classList.remove("open");$("productModal").classList.remove("show");$("overlay").classList.remove("show");document.body.classList.remove("lock")}
 function showProduct(id){const p=products.find(x=>String(x.id)===String(id));if(!p)return;$("modalContent").innerHTML='<button class="modal-close" onclick="closePanels()">×</button><img src="'+p.img+'" alt="'+p.name+'"><div class="modal-copy"><span class="kicker">'+p.cat+'</span><h3>'+p.name+'</h3><div class="price-line">'+money(p.price)+(p.old?'<span class="old-price">'+money(p.old)+'</span>':'')+'</div><p>'+p.desc+'</p><p>Our team will confirm product availability and order details.</p><button class="btn" onclick="addToCart('+p.id+');closePanels()">Add to bag</button></div>';$("productModal").classList.add("show");showOverlay()}
-function startCheckout(){if(!cart.length)return;if(!gbCurrentUser){gbPendingCheckout=true;openAccount();$("accountMessage").textContent="Please sign in or create an account before placing your order.";return}closePanels();$("checkoutModal").classList.add("show");showOverlay();updateCheckoutSummary();if(gbCurrentUser.user_metadata?.full_name)$("customerName").value=gbCurrentUser.user_metadata.full_name}
+function startCheckout(){if(!cart.length)return;closePanels();closeAccount();$("checkoutModal").classList.add("show");showOverlay();updateCheckoutSummary();if(gbCurrentUser?.user_metadata?.full_name)$("customerName").value=gbCurrentUser.user_metadata.full_name;if(gbCurrentUser?.phone){const p=gbCurrentUser.phone.replace(/^\+880/,"0");if(!$("customerPhone").value)$("customerPhone").value=p;}}
 function closeCheckout(){$("checkoutModal").classList.remove("show");$("overlay").classList.remove("show");document.body.classList.remove("lock")}
 function deliveryFee(){return $("deliveryZone").value==="Dhaka"?70:120}
 function updateCheckoutSummary(){const t=totals(),fee=deliveryFee();$("checkoutSummary").innerHTML='<div><span>Product subtotal</span><b>'+money(t.subtotal)+'</b></div><div><span>Delivery</span><b>'+money(fee)+'</b></div><div style="font-weight:700;border-top:1px solid var(--line);padding-top:8px"><span>Total payable</span><b>'+money(t.subtotal+fee)+'</b></div>'}
@@ -254,7 +262,7 @@ $("checkoutForm").addEventListener("submit",async e=>{
  }
 });
 $("overlay").addEventListener("click",()=>{closePanels();closeCheckout();closeAccount()});$("year").textContent=new Date().getFullYear();renderFilters();renderProducts();renderCart();loadLiveProducts();
-gbClient.auth.getUser().then(({data})=>{gbCurrentUser=data.user||null;});
+gbClient.auth.getSession().then(({data})=>{gbCurrentUser=data.session?.user||null;});
 setInterval(()=>{if(gbCurrentUser&&$("accountModal").classList.contains("show"))loadCustomerOrders();},30000);
 </script>
 </body></html>
