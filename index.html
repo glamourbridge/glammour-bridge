@@ -253,7 +253,7 @@ $("checkoutForm").addEventListener("submit",async e=>{
   submitBtn.disabled=false;submitBtn.textContent="Place order";
  }
 });
-$("overlay").addEventListener("click",()=>{closePanels();closeCheckout()});$("year").textContent=new Date().getFullYear();renderFilters();renderProducts();renderCart();loadLiveProducts();
+$("overlay").addEventListener("click",()=>{closePanels();closeCheckout();closeAccount()});$("year").textContent=new Date().getFullYear();renderFilters();renderProducts();renderCart();loadLiveProducts();
 gbClient.auth.getUser().then(({data})=>{gbCurrentUser=data.user||null;});
 setInterval(()=>{if(gbCurrentUser&&$("accountModal").classList.contains("show"))loadCustomerOrders();},30000);
 </script>
