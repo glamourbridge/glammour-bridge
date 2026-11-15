@@ -98,13 +98,13 @@
  <div class="account-card">
   <div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div><span class="kicker">Glamour Bridge</span><h2 id="accountTitle">My Profile</h2></div><button class="close" onclick="closeAccount()" aria-label="Close">×</button></div>
   <div id="accountAuth">
-   <p style="font-size:12px;color:var(--muted)">Login with your phone number using a one-time SMS code. No password or email needed.</p>
-   <label for="accountName">Your name (for new account)</label><input id="accountName" autocomplete="name" placeholder="Your full name">
-   <label for="accountPhone">Phone number</label><input id="accountPhone" type="tel" autocomplete="tel" placeholder="01XXXXXXXXX">
-   <div class="account-actions"><button class="btn" id="sendPhoneCode" onclick="sendPhoneCode()">Send OTP code</button></div>
-   <div id="otpEntry" class="hidden"><label for="accountOtp">SMS verification code</label><input id="accountOtp" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="Enter the code"><div class="account-actions"><button class="btn" onclick="verifyPhoneCode()">Verify & sign in</button><button class="btn btn-light" onclick="sendPhoneCode()">Resend code</button></div></div>
+   <p style="font-size:12px;color:var(--muted)">ফোন নম্বর ও ৪-সংখ্যার PIN দিয়ে অ্যাকাউন্ট খুলুন বা লগইন করুন। SMS লাগবে না। এই ডিভাইসে লগইন সেভ থাকবে।</p>
+   <label for="accountName">আপনার নাম (নতুন অ্যাকাউন্টের জন্য)</label><input id="accountName" autocomplete="name" placeholder="আপনার পুরো নাম">
+   <label for="accountPhone">মোবাইল নম্বর</label><input id="accountPhone" type="tel" autocomplete="tel" placeholder="01XXXXXXXXX">
+   <label for="accountPin">৪-সংখ্যার PIN</label><input id="accountPin" type="password" inputmode="numeric" autocomplete="current-password" maxlength="4" pattern="[0-9]{4}" placeholder="••••">
+   <div class="account-actions"><button class="btn" id="createPhoneAccount" onclick="createPhoneAccount()">নতুন অ্যাকাউন্ট তৈরি</button><button class="btn btn-light" id="loginPhoneAccount" onclick="loginPhoneAccount()">লগইন</button></div>
    <p id="accountMessage" role="status" style="font-size:11px;color:var(--muted)"></p>
-   <p style="font-size:10px;color:var(--muted)">You can close this window and place an order as a guest. Creating an account is optional.</p>
+   <p style="font-size:10px;color:var(--muted)">অ্যাকাউন্ট না খুলেও Guest হিসেবে অর্ডার করতে পারবেন। ৪-সংখ্যার PIN তুলনামূলক দুর্বল—অন্য কোথাও ব্যবহার করা PIN দেবেন না।</p>
   </div>
   <div id="accountProfile" class="hidden">
    <p id="accountWelcome" style="font-size:12px;color:var(--muted)"></p>
@@ -136,31 +136,40 @@ async function syncAccount(){
  if(gbCurrentUser){
   $("accountTitle").textContent="My Profile";
   $("accountWelcome").textContent=(gbCurrentUser.user_metadata?.full_name||"Customer")+" · "+(gbCurrentUser.phone||"Verified phone");
-  await gbClient.rpc("claim_guest_orders");
   await loadCustomerOrders();
  }else{$("accountTitle").textContent="Welcome";$("accountMessage").textContent="";}
 }
-async function sendPhoneCode(){
- const phone=normalizeBdPhone($("accountPhone").value),name=$("accountName").value.trim();
- if(!phone){$("accountMessage").textContent="Enter a valid Bangladesh mobile number, e.g. 017XXXXXXXX.";return}
- $("sendPhoneCode").disabled=true;$("accountMessage").textContent="Sending SMS verification code…";
- try{
-  const options={shouldCreateUser:true,data:{full_name:name||"Glamour Bridge Customer"}};
-  const {error}=await gbClient.auth.signInWithOtp({phone,options});
-  if(error)throw error;
-  $("accountOtp").value="";$("otpEntry").classList.remove("hidden");$("accountMessage").textContent="A verification code has been sent to "+phone+". Enter it below.";
- }catch(err){$("accountMessage").textContent="Could not send SMS code: "+err.message+". Phone login requires an SMS provider configured in Supabase."}
- finally{$("sendPhoneCode").disabled=false}
+function readAccountCredentials(){
+ const phone=normalizeBdPhone($("accountPhone").value),pin=$("accountPin").value.trim();
+ if(!phone){$("accountMessage").textContent="সঠিক বাংলাদেশি মোবাইল নম্বর দিন।";return null}
+ if(!/^[0-9]{4}$/.test(pin)){$("accountMessage").textContent="৪টি সংখ্যার PIN দিন।";return null}
+ return{phone,pin};
 }
-async function verifyPhoneCode(){
- const phone=normalizeBdPhone($("accountPhone").value),token=$("accountOtp").value.trim();
- if(!phone||!token){$("accountMessage").textContent="Enter your phone number and SMS code.";return}
- $("accountMessage").textContent="Verifying code…";
- const {data,error}=await gbClient.auth.verifyOtp({phone,token,type:"sms"});
- if(error){$("accountMessage").textContent=error.message;return}
- gbCurrentUser=data.user||data.session?.user||null;
- await syncAccount();
- if(gbPendingCheckout){gbPendingCheckout=false;closeAccount();startCheckout();}
+async function createPhoneAccount(){
+ const credentials=readAccountCredentials();if(!credentials)return;
+ const name=$("accountName").value.trim();
+ if(!name){$("accountMessage").textContent="নতুন অ্যাকাউন্টের জন্য আপনার নাম লিখুন।";return}
+ const buttons=["createPhoneAccount","loginPhoneAccount"];buttons.forEach(id=>$(id).disabled=true);
+ $("accountMessage").textContent="অ্যাকাউন্ট তৈরি হচ্ছে…";
+ try{
+  const {data,error}=await gbClient.auth.signUp({phone:credentials.phone,password:credentials.pin,options:{data:{full_name:name}}});
+  if(error)throw error;
+  if(!data.session){$("accountMessage").textContent="Supabase-এ Phone confirmation বন্ধ করতে হবে। এটি চালু থাকলে SMS ছাড়া অ্যাকাউন্ট চালু হবে না।";return}
+  gbCurrentUser=data.user||data.session.user;await syncAccount();
+  $("accountMessage").textContent="অ্যাকাউন্ট তৈরি হয়েছে।";
+ }catch(err){$("accountMessage").textContent="অ্যাকাউন্ট তৈরি হয়নি: "+err.message}
+ finally{buttons.forEach(id=>$(id).disabled=false)}
+}
+async function loginPhoneAccount(){
+ const credentials=readAccountCredentials();if(!credentials)return;
+ const buttons=["createPhoneAccount","loginPhoneAccount"];buttons.forEach(id=>$(id).disabled=true);
+ $("accountMessage").textContent="লগইন হচ্ছে…";
+ try{
+  const {data,error}=await gbClient.auth.signInWithPassword({phone:credentials.phone,password:credentials.pin});
+  if(error)throw error;
+  gbCurrentUser=data.user||data.session.user;await syncAccount();
+ }catch(err){$("accountMessage").textContent="লগইন হয়নি: "+err.message}
+ finally{buttons.forEach(id=>$(id).disabled=false)}
 }
 async function customerSignOut(){await gbClient.auth.signOut();gbCurrentUser=null;await syncAccount();}
 async function loadCustomerOrders(){
@@ -168,7 +177,7 @@ async function loadCustomerOrders(){
  $("customerOrders").innerHTML='<p class="muted">Loading your orders…</p>';
  const {data,error}=await gbClient.from("orders").select("id,customer_name,status,subtotal,delivery_fee,delivery_zone,payment_method,created_at,updated_at,order_items(product_name,quantity,unit_price)").eq("customer_id",gbCurrentUser.id).order("created_at",{ascending:false});
  if(error){$("customerOrders").innerHTML='<p class="muted">Could not load orders right now. Please refresh.</p>';console.error(error);return}
- if(!data?.length){$("customerOrders").innerHTML='<p class="muted">You have not placed any orders yet. Guest orders made with this verified phone may appear here.</p>';return}
+ if(!data?.length){$("customerOrders").innerHTML='<p class="muted">এখনও কোনো অর্ডার নেই।</p>';return}
  $("customerOrders").innerHTML=data.map(o=>{
   const status=(o.status||"pending").replace(/_/g," "),total=Number(o.subtotal||0)+Number(o.delivery_fee||0),items=(o.order_items||[]).map(it=>gbEsc(it.product_name)+" × "+it.quantity).join(", ");
   return '<article class="account-order"><div class="account-order-head"><b>Order #'+gbEsc(o.id.slice(0,8))+'</b><span class="account-status">'+gbEsc(status)+'</span></div><small>'+new Date(o.created_at).toLocaleString("en-BD")+'</small><p style="font-size:11px;margin:8px 0">'+items+'</p><div class="account-order-head"><span>'+money(total)+' · '+gbEsc((o.payment_method||"cod").toUpperCase())+'</span><small>Updated: '+new Date(o.updated_at||o.created_at).toLocaleString("en-BD")+'</small></div></article>';
