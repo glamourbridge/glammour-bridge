@@ -57,6 +57,8 @@
 .modal{position:fixed;z-index:80;inset:0;display:grid;place-items:center;padding:18px;opacity:0;visibility:hidden;transition:.2s}.modal.show{opacity:1;visibility:visible}.modal-card{background:var(--paper);width:min(720px,100%);max-height:90vh;overflow:auto;position:relative;display:grid;grid-template-columns:1fr 1fr}.modal-card>img{width:100%;height:100%;min-height:330px;object-fit:cover;background:var(--cream)}.modal-copy{padding:32px 25px}.modal-copy h3{font:500 28px var(--serif);margin:7px 0}.modal-copy p{font-size:11px;color:var(--muted)}.modal-close{position:absolute;right:10px;top:9px;border:0;background:rgba(251,250,247,.9);width:32px;height:32px;border-radius:50%;font-size:21px}.checkout-form{padding:15px 20px;overflow:auto;flex:1}.checkout-form label{display:block;font-size:10px;color:var(--muted);margin:10px 0 4px}.checkout-form input,.checkout-form textarea,.checkout-form select{width:100%;padding:10px;border:1px solid var(--line);background:#fff;outline:none;font-size:11px}.checkout-form textarea{resize:vertical}.checkout-summary{background:var(--cream);padding:12px;margin:12px 0;font-size:11px}.checkout-summary div{display:flex;justify-content:space-between;margin:5px 0}.toast{position:fixed;z-index:100;bottom:20px;left:50%;transform:translate(-50%,15px);background:var(--ink);color:#fff;padding:10px 16px;font-size:10px;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
 @media(max-width:850px){.navlinks{gap:14px}.product-grid{grid-template-columns:repeat(3,1fr)}.category-grid{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:1.3fr 1fr 1fr}.footer-grid>div:last-child{display:none}}
 @media(max-width:620px){.container{width:calc(100% - 28px)}.nav{height:64px}.brand{font-size:23px}.navlinks{display:none}.menu-toggle{display:grid}.hero{padding:14px 0 28px}.hero-panel{min-height:430px}.hero-copy{min-height:430px;padding:32px 23px 28px}.hero h1{font-size:54px}.bridge-art{width:115%;height:54%;right:-28%;opacity:.42}.hero-panel:after{background:linear-gradient(90deg,#f5f0e8 0%,rgba(245,240,232,.92) 55%,rgba(245,240,232,.25) 100%)}.trust{grid-template-columns:repeat(2,1fr);row-gap:13px}.trust-item:nth-child(2){border:0}.section{padding:48px 0}.section-head{align-items:flex-start}.category{height:175px}.category-label b{font-size:18px}.product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 10px}.product-name{font-size:14px}.product-desc{font-size:9px}.quick-add{opacity:1;transform:none;padding:8px;font-size:8px}.shop-tools{align-items:stretch}.chips{width:100%;overflow:auto;flex-wrap:nowrap;padding-bottom:3px}.chip{white-space:nowrap}.search-sort{width:100%}.searchbox{flex:1;min-width:0}.sort{max-width:125px}.story{grid-template-columns:1fr}.story-image img{min-height:230px;max-height:260px}.story-copy{padding:28px 23px}.story-copy h2{font-size:34px}.promise{grid-template-columns:1fr;gap:9px}.promise article{padding:14px}.footer-grid{grid-template-columns:1fr 1fr}.footer-grid>div:first-child{grid-column:1/-1}.footer-grid>div:last-child{display:flex}.copyright{flex-direction:column}.modal-card{grid-template-columns:1fr}.modal-card>img{height:210px;min-height:210px}.modal-copy{padding:22px}.drawer-head{padding:15px 18px}.checkout-form{padding:13px 17px}}
+
+.account-modal{position:fixed;z-index:85;inset:0;display:grid;place-items:center;padding:16px;opacity:0;visibility:hidden;transition:.2s}.account-modal.show{opacity:1;visibility:visible}.account-card{background:var(--paper);width:min(650px,100%);max-height:90vh;overflow:auto;padding:25px;border:1px solid var(--line);box-shadow:0 20px 70px #29272230}.account-card h2{font:500 30px var(--serif);margin:5px 0 15px}.account-card label{display:block;font-size:11px;color:var(--muted);margin:10px 0 4px}.account-card input{width:100%;padding:11px;border:1px solid var(--line);background:#fff}.account-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.account-order{border:1px solid var(--line);padding:13px;margin:10px 0;background:#fff}.account-order-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12px}.account-order small{color:var(--muted)}.account-status{display:inline-block;padding:3px 8px;background:var(--cream);font-size:10px;border-radius:20px}.payment-choice{border:1px solid var(--line);padding:10px;margin:7px 0;font-size:11px;display:flex;gap:9px;align-items:center}.payment-choice.disabled{opacity:.55;background:#f3f0ec}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
 </style>
 </head>
@@ -66,7 +68,7 @@
 <a class="brand" href="#home">Glamour <span>Bridge.</span></a>
 <nav class="navlinks" aria-label="Main navigation"><a href="#home">Home</a><a href="#categories">Categories</a><a href="#shop">Shop All</a><a href="#story">Our Story</a><a href="#contact">Contact</a></nav>
 <div class="nav-actions"><button class="icon-btn menu-toggle" id="menuBtn" aria-label="Open menu" aria-expanded="false" onclick="toggleMenu()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7h18M3 12h18M3 17h18"/></svg></button>
-<button class="icon-btn" aria-label="Shopping bag" onclick="openCart()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg><span class="count" id="cartCount">0</span></button></div></div>
+<button class="icon-btn account-btn" aria-label="My profile" onclick="openAccount()" title="My profile">👤</button><button class="icon-btn" aria-label="Shopping bag" onclick="openCart()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg><span class="count" id="cartCount">0</span></button></div></div>
 <nav class="mobile-nav" id="mobileNav"><a href="#home" onclick="toggleMenu()">Home</a><a href="#categories" onclick="toggleMenu()">Categories</a><a href="#shop" onclick="toggleMenu()">Shop All</a><a href="#story" onclick="toggleMenu()">Our Story</a><a href="#contact" onclick="toggleMenu()">Contact</a></nav></header>
 <main>
 <section class="hero" id="home"><div class="container"><div class="hero-panel"><div class="hero-copy"><span class="eyebrow">Glamour Bridge · Beauty & self-care</span><h1>Elegance, <em>connected.</em></h1><p>Discover beauty essentials that bring out your confidence.</p><div class="actions"><a class="btn" href="#shop">Shop the collection ↗</a><a class="btn btn-light" href="#story">Our story</a></div></div><svg class="bridge-art" viewBox="0 0 1000 300" preserveAspectRatio="xMidYMax meet" aria-hidden="true"><path d="M35 218 Q500 184 965 218" fill="none" stroke="#8d3e32" stroke-width="5"/><path d="M80 222 Q500 -8 920 222" fill="none" stroke="#8d3e32" stroke-width="7"/><path d="M145 222 Q500 40 855 222" fill="none" stroke="#b88761" stroke-width="3"/><path d="M190 222 V126 M810 222 V126 M190 126 H810" fill="none" stroke="#4a3029" stroke-width="8"/><path d="M225 122 V192 M270 112 V177 M315 103 V163 M360 96 V151 M405 91 V142 M450 87 V135 M500 85 V132 M550 87 V135 M595 91 V142 M640 96 V151 M685 103 V163 M730 112 V177 M775 122 V192" fill="none" stroke="#b88761" stroke-width="3"/><path d="M28 246 H972 M90 258 H910" stroke="#c6a17c" stroke-width="2" opacity=".75"/><path d="M95 235 Q500 285 905 235" fill="none" stroke="#4a3029" stroke-width="3" opacity=".65"/></svg></div>
@@ -87,13 +89,84 @@
 <div class="overlay" id="overlay" onclick="closePanels()"></div>
 <aside class="drawer" id="cartDrawer" aria-label="Shopping cart"><div class="drawer-head"><h3>Your bag <span id="drawerCount" style="font:11px var(--sans);color:var(--muted)">(0)</span></h3><button class="close" onclick="closePanels()" aria-label="Close cart">×</button></div><div class="cart-items" id="cartItems"></div><div class="cart-bottom" id="cartBottom"></div></aside>
 <div class="modal" id="productModal"><div class="modal-card" id="modalContent"></div></div>
-<div class="modal" id="checkoutModal"><div class="modal-card" style="display:flex;flex-direction:column;max-width:490px"><div class="drawer-head"><h3>Delivery details</h3><button class="close" onclick="closeCheckout()" aria-label="Close checkout">×</button></div><form class="checkout-form" id="checkoutForm"><label for="customerName">Full name *</label><input id="customerName" required autocomplete="name" placeholder="Your name"><label for="customerPhone">Phone number *</label><input id="customerPhone" required inputmode="tel" autocomplete="tel" pattern="[0-9+() -]{8,18}" placeholder="01XXXXXXXXX"><label for="customerAddress">Full address *</label><textarea id="customerAddress" required rows="3" autocomplete="street-address" placeholder="House, road, area, district"></textarea><label for="deliveryZone">Delivery area *</label><select id="deliveryZone" required><option value="Dhaka">Inside Dhaka — ৳70</option><option value="Outside Dhaka">Outside Dhaka — ৳120</option></select><div class="checkout-summary" id="checkoutSummary"></div><button class="btn checkout-btn" type="submit">Place order</button><p style="font-size:9px;color:var(--muted)">Your order will be saved securely. Our team will contact you to confirm availability and delivery.</p></form></div></div>
-<div class="toast" id="toast" role="status"></div>
+<div class="modal" id="checkoutModal"><div class="modal-card" style="display:flex;flex-direction:column;max-width:490px"><div class="drawer-head"><h3>Delivery details</h3><button class="close" onclick="closeCheckout()" aria-label="Close checkout">×</button></div><form class="checkout-form" id="checkoutForm"><label for="customerName">Full name *</label><input id="customerName" required autocomplete="name" placeholder="Your name"><label for="customerPhone">Phone number *</label><input id="customerPhone" required inputmode="tel" autocomplete="tel" pattern="[0-9+() -]{8,18}" placeholder="01XXXXXXXXX"><label for="customerAddress">Full address *</label><textarea id="customerAddress" required rows="3" autocomplete="street-address" placeholder="House, road, area, district"></textarea><label>Payment method *</label>
+<label class="payment-choice"><input type="radio" name="paymentMethod" value="cod" checked> Cash on Delivery</label>
+<label class="payment-choice disabled"><input type="radio" name="paymentMethod" value="bkash" disabled> bKash — Coming soon (currently unavailable)</label>
+<label for="deliveryZone">Delivery area *</label><select id="deliveryZone" required><option value="Dhaka">Inside Dhaka — ৳70</option><option value="Outside Dhaka">Outside Dhaka — ৳120</option></select><div class="checkout-summary" id="checkoutSummary"></div><button class="btn checkout-btn" type="submit">Place order</button><p style="font-size:9px;color:var(--muted)">Your order will be saved securely. Our team will contact you to confirm availability and delivery.</p></form></div></div>
+
+<div class="account-modal" id="accountModal" role="dialog" aria-modal="true" aria-label="Customer account">
+ <div class="account-card">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div><span class="kicker">Glamour Bridge</span><h2 id="accountTitle">My Profile</h2></div><button class="close" onclick="closeAccount()" aria-label="Close">×</button></div>
+  <div id="accountAuth">
+   <p style="font-size:12px;color:var(--muted)">Create an account or sign in to view your orders and delivery updates.</p>
+   <label for="accountName">Full name (for new account)</label><input id="accountName" autocomplete="name" placeholder="Your full name">
+   <label for="accountEmail">Email address</label><input id="accountEmail" type="email" autocomplete="email" placeholder="you@example.com">
+   <label for="accountPassword">Password</label><input id="accountPassword" type="password" autocomplete="current-password" minlength="8" placeholder="At least 8 characters">
+   <div class="account-actions"><button class="btn" onclick="customerSignIn()">Sign in</button><button class="btn btn-light" onclick="customerSignUp()">Create account</button></div>
+   <p id="accountMessage" role="status" style="font-size:11px;color:var(--muted)"></p>
+  </div>
+  <div id="accountProfile" class="hidden">
+   <p id="accountWelcome" style="font-size:12px;color:var(--muted)"></p>
+   <div class="account-actions"><button class="btn btn-light" onclick="loadCustomerOrders()">Refresh orders</button><button class="btn btn-light" onclick="customerSignOut()">Sign out</button></div>
+   <h3 style="font:500 22px var(--serif);margin:20px 0 5px">My Orders</h3>
+   <div id="customerOrders"><p class="muted">Loading your orders…</p></div>
+  </div>
+ </div>
+</div><div class="toast" id="toast" role="status"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const GB_SUPABASE_URL="https://djtvswtlsyvwezqvginc.supabase.co";
 const GB_SUPABASE_KEY="sb_publishable_9A7XmilY9JfhPn97TJUiEQ_S6stlSsa";
 const gbClient=window.supabase.createClient(GB_SUPABASE_URL,GB_SUPABASE_KEY);
+let gbCurrentUser=null;
+let gbPendingCheckout=false;
+function gbEsc(v){return String(v??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));}
+function openAccount(){
+ closePanels();closeCheckout();
+ $("accountModal").classList.add("show");$("overlay").classList.add("show");document.body.classList.add("lock");
+ syncAccount();
+}
+function closeAccount(){$("accountModal").classList.remove("show");$("overlay").classList.remove("show");document.body.classList.remove("lock")}
+async function syncAccount(){
+ const {data:{user}}=await gbClient.auth.getUser();gbCurrentUser=user||null;
+ $("accountAuth").classList.toggle("hidden",!!gbCurrentUser);$("accountProfile").classList.toggle("hidden",!gbCurrentUser);
+ if(gbCurrentUser){
+  $("accountTitle").textContent="My Profile";
+  $("accountWelcome").textContent=(gbCurrentUser.user_metadata?.full_name||gbCurrentUser.email)+" · "+gbCurrentUser.email;
+  await loadCustomerOrders();
+ }else{$("accountTitle").textContent="Welcome";$("accountMessage").textContent="";}
+}
+async function customerSignUp(){
+ const name=$("accountName").value.trim(),email=$("accountEmail").value.trim(),password=$("accountPassword").value;
+ if(!name||!email||password.length<8){$("accountMessage").textContent="Enter your name, a valid email and a password of at least 8 characters.";return}
+ const {data,error}=await gbClient.auth.signUp({email,password,options:{data:{full_name:name},emailRedirectTo:location.origin+location.pathname}});
+ $("accountMessage").textContent=error?error.message:(data.session?"Account created. You are signed in.":"Account created. Please verify your email from your inbox, then sign in.");
+ if(data.session){await syncAccount();if(gbPendingCheckout){gbPendingCheckout=false;closeAccount();startCheckout();}}
+}
+async function customerSignIn(){
+ const email=$("accountEmail").value.trim(),password=$("accountPassword").value;
+ if(!email||!password){$("accountMessage").textContent="Enter your email and password.";return}
+ const {error}=await gbClient.auth.signInWithPassword({email,password});
+ if(error){$("accountMessage").textContent=error.message;return}
+ await syncAccount();
+ if(gbPendingCheckout){gbPendingCheckout=false;closeAccount();startCheckout();}
+}
+async function customerSignOut(){await gbClient.auth.signOut();gbCurrentUser=null;await syncAccount();}
+async function loadCustomerOrders(){
+ if(!gbCurrentUser)return;
+ $("customerOrders").innerHTML='<p class="muted">Loading your orders…</p>';
+ const {data,error}=await gbClient.from("orders").select("id,customer_name,status,subtotal,delivery_fee,delivery_zone,payment_method,created_at,updated_at,order_items(product_name,quantity,unit_price)").eq("customer_id",gbCurrentUser.id).order("created_at",{ascending:false});
+ if(error){$("customerOrders").innerHTML='<p class="muted">Could not load orders right now. Please refresh.</p>';console.error(error);return}
+ if(!data?.length){$("customerOrders").innerHTML='<p class="muted">You have not placed any orders yet. Your orders will appear here.</p>';return}
+ $("customerOrders").innerHTML=data.map(o=>{
+  const status=(o.status||"pending").replace(/_/g," ");
+  const total=Number(o.subtotal||0)+Number(o.delivery_fee||0);
+  const items=(o.order_items||[]).map(it=>gbEsc(it.product_name)+" × "+it.quantity).join(", ");
+  return '<article class="account-order"><div class="account-order-head"><b>Order #'+gbEsc(o.id.slice(0,8))+'</b><span class="account-status">'+gbEsc(status)+'</span></div><small>'+new Date(o.created_at).toLocaleString("en-BD")+'</small><p style="font-size:11px;margin:8px 0">'+items+'</p><div class="account-order-head"><span>'+money(total)+' · Cash on Delivery</span><small>Updated: '+new Date(o.updated_at||o.created_at).toLocaleString("en-BD")+'</small></div></article>';
+ }).join("");
+}
+gbClient.auth.onAuthStateChange((event,session)=>{gbCurrentUser=session?.user||null;if(event==="SIGNED_IN"||event==="SIGNED_OUT"||event==="TOKEN_REFRESHED"){if($("accountModal").classList.contains("show"))syncAccount();}});
+
 (function trackVisit(){
  let sid=sessionStorage.getItem("gb_visit_session");
  if(!sid){sid=(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(36).slice(2));sessionStorage.setItem("gb_visit_session",sid)}
@@ -139,7 +212,7 @@ function showOverlay(){$("overlay").classList.add("show");document.body.classLis
 function openCart(){closePanels();$("cartDrawer").classList.add("open");showOverlay()}
 function closePanels(){$("cartDrawer").classList.remove("open");$("productModal").classList.remove("show");$("overlay").classList.remove("show");document.body.classList.remove("lock")}
 function showProduct(id){const p=products.find(x=>String(x.id)===String(id));if(!p)return;$("modalContent").innerHTML='<button class="modal-close" onclick="closePanels()">×</button><img src="'+p.img+'" alt="'+p.name+'"><div class="modal-copy"><span class="kicker">'+p.cat+'</span><h3>'+p.name+'</h3><div class="price-line">'+money(p.price)+(p.old?'<span class="old-price">'+money(p.old)+'</span>':'')+'</div><p>'+p.desc+'</p><p>Our team will confirm product availability and order details.</p><button class="btn" onclick="addToCart('+p.id+');closePanels()">Add to bag</button></div>';$("productModal").classList.add("show");showOverlay()}
-function startCheckout(){if(!cart.length)return;closePanels();$("checkoutModal").classList.add("show");showOverlay();updateCheckoutSummary()}
+function startCheckout(){if(!cart.length)return;if(!gbCurrentUser){gbPendingCheckout=true;openAccount();$("accountMessage").textContent="Please sign in or create an account before placing your order.";return}closePanels();$("checkoutModal").classList.add("show");showOverlay();updateCheckoutSummary();if(gbCurrentUser.user_metadata?.full_name)$("customerName").value=gbCurrentUser.user_metadata.full_name}
 function closeCheckout(){$("checkoutModal").classList.remove("show");$("overlay").classList.remove("show");document.body.classList.remove("lock")}
 function deliveryFee(){return $("deliveryZone").value==="Dhaka"?70:120}
 function updateCheckoutSummary(){const t=totals(),fee=deliveryFee();$("checkoutSummary").innerHTML='<div><span>Product subtotal</span><b>'+money(t.subtotal)+'</b></div><div><span>Delivery</span><b>'+money(fee)+'</b></div><div style="font-weight:700;border-top:1px solid var(--line);padding-top:8px"><span>Total payable</span><b>'+money(t.subtotal+fee)+'</b></div>'}
@@ -164,7 +237,8 @@ $("checkoutForm").addEventListener("submit",async e=>{
    p_customer_phone:phone,
    p_customer_address:address,
    p_delivery_zone:zone,
-   p_items:items
+   p_items:items,
+   p_payment_method:"cod"
   });
   if(orderError)throw orderError;
   if(!order||!order.id)throw new Error("The order could not be confirmed. Please try again.");
@@ -180,5 +254,7 @@ $("checkoutForm").addEventListener("submit",async e=>{
  }
 });
 $("overlay").addEventListener("click",()=>{closePanels();closeCheckout()});$("year").textContent=new Date().getFullYear();renderFilters();renderProducts();renderCart();loadLiveProducts();
+gbClient.auth.getUser().then(({data})=>{gbCurrentUser=data.user||null;});
+setInterval(()=>{if(gbCurrentUser&&$("accountModal").classList.contains("show"))loadCustomerOrders();},30000);
 </script>
 </body></html>
