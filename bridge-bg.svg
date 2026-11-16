@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900">
+<defs>
+ <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#f8e9e8"/><stop offset=".58" stop-color="#f5d8d2"/><stop offset="1" stop-color="#f3e4dc"/></linearGradient>
+ <linearGradient id="water" x2="0" y2="1"><stop stop-color="#f1d5cf"/><stop offset="1" stop-color="#f8e9e2"/></linearGradient>
+ <linearGradient id="fade" x2="1"><stop stop-color="#fff8f1" stop-opacity=".82"/><stop offset=".48" stop-color="#fff8f1" stop-opacity=".25"/><stop offset="1" stop-color="#fff8f1" stop-opacity="0"/></linearGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#sky)"/>
+<circle cx="1010" cy="490" r="52" fill="#fff1dc" opacity=".72"/>
+<path d="M0 610 Q230 550 430 602 T850 590 T1250 580 T1600 600 V900 H0Z" fill="#d9bcb5" opacity=".22"/>
+<g fill="#cdaea9" opacity=".25"><path d="M0 600v-65h30v65m15 0v-92h25v92m20 0v-58h18v58m38 0v-100h28v100m24 0v-72h20v72m60 0v-125h25v125m38 0v-82h20v82m44 0v-110h24v110m45 0v-65h20v65m55 0v-90h26v90m70 0v-115h25v115m48 0v-80h22v80m90 0v-120h28v120m48 0v-90h24v90m70 0v-108h26v108m55 0v-76h22v76m70 0v-130h28v130m60 0v-90h24v90m70 0v-112h26v112m60 0v-74h22v74m60 0v-104h28v104m45 0v-80h20v80"/></g>
+<rect y="650" width="1600" height="250" fill="url(#water)" opacity=".88"/>
+<g fill="none" stroke="#a78380" stroke-linecap="round" stroke-linejoin="round">
+ <path d="M420 625 Q930 548 1600 550" stroke-width="9" opacity=".8"/>
+ <path d="M420 625 Q930 548 1600 550" stroke="#f8e6df" stroke-width="2" opacity=".7"/>
+ <path d="M720 615V280 M790 607V280 M1260 562V150 M1340 558V150" stroke-width="25" opacity=".75"/>
+ <path d="M705 280h100 M1245 150h110" stroke-width="20" opacity=".75"/>
+ <path d="M720 285 Q950 560 1260 155 M790 285 Q1000 545 1340 155" stroke-width="3" opacity=".8"/>
+ <path d="M420 625 L720 280 M420 625 L790 280 M790 607 L1260 150 M790 607 L1340 150" stroke-width="2" opacity=".55"/>
+ <path d="M820 602V574 M875 593V566 M930 585V560 M985 578V554 M1040 572V550 M1095 568V546 M1150 565V543 M1400 556V530 M1460 554V528 M1520 552V526" stroke-width="2" opacity=".6"/>
+</g>
+<g stroke="#c59c98" stroke-width="3" opacity=".23" fill="none"><path d="M650 660l-20 160m100-155-10 170m150-180 5 180m120-190 20 200m140-205 35 200m100-200 50 190m100-190 65 170"/><path d="M0 715q350 20 700 0t900 0M0 780q350 20 700 0t900 0"/></g>
+<rect width="1600" height="900" fill="url(#fade)"/>
+</svg>
